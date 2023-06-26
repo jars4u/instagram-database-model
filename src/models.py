@@ -14,6 +14,7 @@ class User(Base):
     last_name = Column(String(80), nullable=False)
     profile_name = Column(String(80), nullable=False)
     post = relationship('Post',back_populates='User', uselist=False)
+    follower = relationship('Follower',back_populates='user', uselist=True)
 
 
 class Post(Base):
@@ -22,8 +23,8 @@ class Post(Base):
     created_by_user = Column(String(250), ForeignKey('user.id'), nullable=False)
     created_at = Column(DateTime(80), nullable=False)
     comment = Column(String(250), nullable=False)
-    user = relationship('User', back_populates='Post')
-    post_media = relationship('Post_Media', back_populates='Post')
+    user = relationship('User', back_populates='post')
+    post_media = relationship('Post_Media', back_populates='post')
 
 
 class Post_Media(Base):
@@ -31,7 +32,7 @@ class Post_Media(Base):
     id = Column(Integer, primary_key=True)
     post_id = Column(Integer, ForeignKey('post.id'), nullable=False)
     media_file = Column(String(80), nullable=False)
-    post = relationship('Post', back_populates='Post_Media')
+    post = relationship('Post', back_populates='post_media')
 
 
 class Follower(Base):
@@ -39,6 +40,7 @@ class Follower(Base):
     id = Column(Integer, primary_key=True)
     following_user_id = Column(String(250), ForeignKey('user.id'), nullable=False)
     followed_user_id = Column(String(250), ForeignKey('user.id'), nullable=False)
+    user = relationship('User', back_populates='follower')
 
 
 
