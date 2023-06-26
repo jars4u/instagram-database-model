@@ -1,29 +1,46 @@
 import os
 import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy import create_engine
 from eralchemy2 import render_er
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
+class User(Base):
+    __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    first_name = Column(String(80), nullable=False)
+    last_name = Column(String(80), nullable=False)
+    profile_name = Column(String(80), nullable=False)
+    post = relationship('Post',back_populates='User', uselist=False)
 
-class Address(Base):
-    __tablename__ = 'address'
-    # Here we define columns for the table address.
-    # Notice that each column is also a normal Python instance attribute.
+
+class Post(Base):
+    __tablename__ = 'post'
     id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
+    created_by_user = Column(String(250), ForeignKey('user.id'), nullable=False)
+    created_at = Column(DateTime(80), nullable=False)
+    comment = Column(String(250), nullable=False)
+    user = relationship('User', back_populates='Post')
+    post_media = relationship('Post_Media', back_populates='Post')
+
+
+class Post_Media(Base):
+    __tablename__ = 'post_media'
+    id = Column(Integer, primary_key=True)
+    post_id = Column(Integer, ForeignKey('post.id'), nullable=False)
+    media_file = Column(String(80), nullable=False)
+    post = relationship('Post', back_populates='Post_Media')
+
+
+class Follower(Base):
+    __tablename__ = 'follower'
+    id = Column(Integer, primary_key=True)
+    following_user_id = Column(String(250), ForeignKey('user.id'), nullable=False)
+    followed_user_id = Column(String(250), ForeignKey('user.id'), nullable=False)
+
+
 
     def to_dict(self):
         return {}
